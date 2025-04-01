@@ -16,8 +16,8 @@
 
 // Membuat instance untuk ketiga jenis fuzzy
 FuzzyMamdani fuzzyMamdani(2, 1, 9, 3);      // 2 input, 1 output, 9 rules, 3 sets per var
-FuzzySugeno fuzzySugeno(2, 1, 9, 3);        // 2 input, 1 output, 9 rules, 3 sets per var
-FuzzyTsukamoto fuzzyTsukamoto(2, 1, 9, 3);  // 2 input, 1 output, 9 rules, 3 sets per var
+FuzzySugeno fuzzySugeno(2, 3, 9, 3);        // 2 input, 3 output (konstanta), 9 rules, 3 sets per var
+FuzzyTsukamoto fuzzyTsukamoto(2, 1, 9, 4);  // 2 input, 1 output, 9 rules, 4 sets per var
 
 // Buffer untuk input serial
 String inputString = "";
@@ -114,14 +114,16 @@ void setupFuzzySugeno() {
   float normalHumid[3] = { 40.0, 60.0, 80.0 };
   float wetHumid[3] = { 70.0, 90.0, 90.0 };
 
-  fuzzySugeno.addFuzzySet(0, "Dry", Fuzzy::TRIANGULAR, dryHumid);
-  fuzzySugeno.addFuzzySet(0, "Normal", Fuzzy::TRIANGULAR, normalHumid);
-  fuzzySugeno.addFuzzySet(0, "Wet", Fuzzy::TRIANGULAR, wetHumid);
+  fuzzySugeno.addFuzzySet(1, "Dry", Fuzzy::TRIANGULAR, dryHumid);
+  fuzzySugeno.addFuzzySet(1, "Normal", Fuzzy::TRIANGULAR, normalHumid);
+  fuzzySugeno.addFuzzySet(1, "Wet", Fuzzy::TRIANGULAR, wetHumid);
 
-  // Menambahkan constant outputs untuk Sugeno
-  fuzzySugeno.addConstantOutput("LowSpeed", 20.0);     // Low speed - 20%
-  fuzzySugeno.addConstantOutput("MediumSpeed", 50.0);  // Medium speed - 50%
-  fuzzySugeno.addConstantOutput("HighSpeed", 80.0);    // High speed - 80%
+  // Menambahkan output konstanta untuk Sugeno
+  // Berbeda dengan Mamdani, Sugeno tidak menggunakan fuzzy set untuk output
+  // melainkan menggunakan nilai konstanta atau fungsi linear
+  fuzzySugeno.addConstantOutput("FanSpeedLow", 20.0);     // Kipas lambat: 20%
+  fuzzySugeno.addConstantOutput("FanSpeedMedium", 50.0);  // Kipas sedang: 50%
+  fuzzySugeno.addConstantOutput("FanSpeedHigh", 80.0);    // Kipas cepat: 80%
 
   // Menambahkan aturan fuzzy
   addSugenoRules();
@@ -230,47 +232,47 @@ void addSugenoRules() {
   // 1. Jika suhu dingin dan kelembapan kering, kipas lambat
   int vars1[2] = { 0, 1 };
   int sets1[2] = { 0, 0 };                        // Cold, Dry
-  fuzzySugeno.addRule(vars1, sets1, 2, 0, true);  // Output: LowSpeed
+  fuzzySugeno.addRule(vars1, sets1, 2, 0, true);  // Output: FanSpeedLow (indeks 0)
 
   // 2. Jika suhu dingin dan kelembapan normal, kipas lambat
   int vars2[2] = { 0, 1 };
   int sets2[2] = { 0, 1 };                        // Cold, Normal
-  fuzzySugeno.addRule(vars2, sets2, 2, 0, true);  // Output: LowSpeed
+  fuzzySugeno.addRule(vars2, sets2, 2, 0, true);  // Output: FanSpeedLow (indeks 0)
 
   // 3. Jika suhu dingin dan kelembapan basah, kipas sedang
   int vars3[2] = { 0, 1 };
   int sets3[2] = { 0, 2 };                        // Cold, Wet
-  fuzzySugeno.addRule(vars3, sets3, 2, 1, true);  // Output: MediumSpeed
+  fuzzySugeno.addRule(vars3, sets3, 2, 1, true);  // Output: FanSpeedMedium (indeks 1)
 
   // 4. Jika suhu normal dan kelembapan kering, kipas sedang
   int vars4[2] = { 0, 1 };
   int sets4[2] = { 1, 0 };                        // Normal, Dry
-  fuzzySugeno.addRule(vars4, sets4, 2, 1, true);  // Output: MediumSpeed
+  fuzzySugeno.addRule(vars4, sets4, 2, 1, true);  // Output: FanSpeedMedium (indeks 1)
 
   // 5. Jika suhu normal dan kelembapan normal, kipas sedang
   int vars5[2] = { 0, 1 };
   int sets5[2] = { 1, 1 };                        // Normal, Normal
-  fuzzySugeno.addRule(vars5, sets5, 2, 1, true);  // Output: MediumSpeed
+  fuzzySugeno.addRule(vars5, sets5, 2, 1, true);  // Output: FanSpeedMedium (indeks 1)
 
   // 6. Jika suhu normal dan kelembapan basah, kipas cepat
   int vars6[2] = { 0, 1 };
   int sets6[2] = { 1, 2 };                        // Normal, Wet
-  fuzzySugeno.addRule(vars6, sets6, 2, 2, true);  // Output: HighSpeed
+  fuzzySugeno.addRule(vars6, sets6, 2, 2, true);  // Output: FanSpeedHigh (indeks 2)
 
   // 7. Jika suhu panas dan kelembapan kering, kipas cepat
   int vars7[2] = { 0, 1 };
   int sets7[2] = { 2, 0 };                        // Hot, Dry
-  fuzzySugeno.addRule(vars7, sets7, 2, 2, true);  // Output: HighSpeed
+  fuzzySugeno.addRule(vars7, sets7, 2, 2, true);  // Output: FanSpeedHigh (indeks 2)
 
   // 8. Jika suhu panas dan kelembapan normal, kipas cepat
   int vars8[2] = { 0, 1 };
   int sets8[2] = { 2, 1 };                        // Hot, Normal
-  fuzzySugeno.addRule(vars8, sets8, 2, 2, true);  // Output: HighSpeed
+  fuzzySugeno.addRule(vars8, sets8, 2, 2, true);  // Output: FanSpeedHigh (indeks 2)
 
   // 9. Jika suhu panas dan kelembapan basah, kipas cepat
   int vars9[2] = { 0, 1 };
   int sets9[2] = { 2, 2 };                        // Hot, Wet
-  fuzzySugeno.addRule(vars9, sets9, 2, 2, true);  // Output: HighSpeed
+  fuzzySugeno.addRule(vars9, sets9, 2, 2, true);  // Output: FanSpeedHigh (indeks 2)
 }
 
 // Aturan-aturan untuk Fuzzy Tsukamoto
@@ -410,18 +412,29 @@ void loop() {
       Serial.println("Metode \t\t| Kecepatan Kipas");
       Serial.println("------------------------");
 
-      if (mamdaniOutputs != nullptr && sugenoOutputs != nullptr && tsukamotoOutputs != nullptr) {
+      float* mamdaniResults = fuzzyMamdani.evaluate(inputs);
+      float* sugenoResults = fuzzySugeno.evaluate(inputs);
+      float* tsukamotoResults = fuzzyTsukamoto.evaluate(inputs);
+
+      if (mamdaniResults != nullptr) {
         Serial.print("Mamdani \t| ");
-        Serial.print(mamdaniOutputs[0]);
+        Serial.print(mamdaniResults[0]);
         Serial.println("%");
+        delete[] mamdaniResults;
+      }
 
+      if (sugenoResults != nullptr) {
         Serial.print("Sugeno \t\t| ");
-        Serial.print(sugenoOutputs[0]);
+        Serial.print(sugenoResults[0]);
         Serial.println("%");
+        delete[] sugenoResults;
+      }
 
+      if (tsukamotoResults != nullptr) {
         Serial.print("Tsukamoto \t| ");
-        Serial.print(tsukamotoOutputs[0]);
+        Serial.print(tsukamotoResults[0]);
         Serial.println("%");
+        delete[] tsukamotoResults;
       }
 
     } else {
