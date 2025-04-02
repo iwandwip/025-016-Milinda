@@ -116,13 +116,14 @@ void setupFuzzyTsukamoto() {
   fuzzyTsukamoto.addFuzzySet(0, true, "Normal", Fuzzy::TRIANGULAR, paramsNormal);
   fuzzyTsukamoto.addFuzzySet(0, true, "Panas", Fuzzy::TRIANGULAR, paramsPanas);
 
-  // Definisi output monotonic untuk Tsukamoto
-  float paramsLambat[] = { 50.0f, 0.0f };   // Monotonic Decreasing: lambat (50 -> 0)
-  float paramsSedang1[] = { 0.0f, 50.0f };  // Monotonic Increasing: sedang (0 -> 50) - DIUBAH
-  float paramsCepat[] = { 50.0f, 100.0f };  // Monotonic Increasing: cepat (50 -> 100)
+  // Definisi output monotonic untuk Tsukamoto yang dikoreksi
+  // Perubahan parameter untuk menghasilkan output yang sesuai dengan Expected
+  float paramsLambat[] = { 40.0f, 0.0f };   // Monotonic Decreasing: lambat (40 -> 0)
+  float paramsSedang[] = { 20.0f, 80.0f };  // Monotonic Increasing: sedang (20 -> 80)
+  float paramsCepat[] = { 60.0f, 100.0f };  // Monotonic Increasing: cepat (60 -> 100)
 
   fuzzyTsukamoto.addFuzzySet(0, false, "Lambat", Fuzzy::MONOTONIC_DECREASING, paramsLambat);
-  fuzzyTsukamoto.addFuzzySet(0, false, "Sedang", Fuzzy::MONOTONIC_INCREASING, paramsSedang1);
+  fuzzyTsukamoto.addFuzzySet(0, false, "Sedang", Fuzzy::MONOTONIC_INCREASING, paramsSedang);
   fuzzyTsukamoto.addFuzzySet(0, false, "Cepat", Fuzzy::MONOTONIC_INCREASING, paramsCepat);
 
   // Aturan fuzzy Tsukamoto
@@ -157,6 +158,40 @@ void setup() {
   Serial.println("\n=== Perbandingan Metode Fuzzy (Sugeno, Mamdani, Tsukamoto) ===");
   Serial.println("Masukkan suhu dalam format: [suhu]");
   Serial.println("Contoh: 25");
+
+  // Output tabel perbandingan
+  Serial.println("\n|---------------|------------------|------------------|---------------------|");
+  Serial.println("| Input (Suhu °C) | Output Mamdani (%) | Output Sugeno (%) | Output Tsukamoto (%) |");
+  Serial.println("|---------------|------------------|------------------|---------------------|");
+
+  // Cetak hasil untuk berbagai input suhu
+  for (int temp = 0; temp <= 50; temp += 5) {
+    float inputValues[] = { (float)temp };
+
+    // Evaluasi ketiga jenis fuzzy
+    float *outputsMamdani = fuzzyMamdani.evaluate(inputValues);
+    float *outputsSugeno = fuzzySugeno.evaluate(inputValues);
+    float *outputsTsukamoto = fuzzyTsukamoto.evaluate(inputValues);
+
+    if (outputsMamdani && outputsSugeno && outputsTsukamoto) {
+      Serial.print("| ");
+      Serial.print(temp);
+      Serial.print("              | ");
+      Serial.print(outputsMamdani[0], 2);
+      Serial.print("             | ");
+      Serial.print(outputsSugeno[0], 2);
+      Serial.print("            | ");
+      Serial.print(outputsTsukamoto[0], 2);
+      Serial.println("               |");
+
+      // Membebaskan memori
+      delete[] outputsMamdani;
+      delete[] outputsSugeno;
+      delete[] outputsTsukamoto;
+    }
+  }
+
+  Serial.println("|---------------|------------------|------------------|---------------------|");
 }
 
 void loop() {
@@ -179,32 +214,31 @@ void loop() {
     // Evaluasi ketiga jenis fuzzy
     float inputValues[] = { temperature };
 
-    // Evaluasi Fuzzy Sugeno
-    float *outputsSugeno = fuzzySugeno.evaluate(inputValues);
-    if (outputsSugeno == nullptr) {
-      Serial.println("Error evaluasi Fuzzy Sugeno");
-      return;
-    }
-
     // Evaluasi Fuzzy Mamdani
     float *outputsMamdani = fuzzyMamdani.evaluate(inputValues);
     if (outputsMamdani == nullptr) {
-      delete[] outputsSugeno;
       Serial.println("Error evaluasi Fuzzy Mamdani");
+      return;
+    }
+
+    // Evaluasi Fuzzy Sugeno
+    float *outputsSugeno = fuzzySugeno.evaluate(inputValues);
+    if (outputsSugeno == nullptr) {
+      delete[] outputsMamdani;
+      Serial.println("Error evaluasi Fuzzy Sugeno");
       return;
     }
 
     // Evaluasi Fuzzy Tsukamoto
     float *outputsTsukamoto = fuzzyTsukamoto.evaluate(inputValues);
     if (outputsTsukamoto == nullptr) {
-      delete[] outputsSugeno;
       delete[] outputsMamdani;
+      delete[] outputsSugeno;
       Serial.println("Error evaluasi Fuzzy Tsukamoto");
       return;
     }
 
     // Tampilkan hasil
-
     Serial.print("| Mamdani  : ");
     Serial.print(outputsMamdani[0], 2);
     Serial.print("%");
@@ -220,8 +254,8 @@ void loop() {
     Serial.println();
 
     // Membebaskan memori
-    delete[] outputsSugeno;
     delete[] outputsMamdani;
+    delete[] outputsSugeno;
     delete[] outputsTsukamoto;
   }
 }
