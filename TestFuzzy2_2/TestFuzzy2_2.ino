@@ -118,9 +118,11 @@ void setupFuzzyTsukamoto() {
 
   // Definisi output monotonic untuk Tsukamoto yang dikoreksi
   // Perubahan parameter untuk menghasilkan output yang sesuai dengan Expected
-  float paramsLambat[] = { 40.0f, 0.0f };   // Monotonic Decreasing: lambat (40 -> 0)
-  float paramsSedang[] = { 20.0f, 80.0f };  // Monotonic Increasing: sedang (20 -> 80)
-  float paramsCepat[] = { 60.0f, 100.0f };  // Monotonic Increasing: cepat (60 -> 100)
+  // Parameter yang benar untuk Tsukamoto
+  // Definisi output monotonic untuk Tsukamoto - Parameter yang dikoreksi
+  float paramsLambat[] = { 30.0f, 0.0f };   // Monotonic Decreasing (dingin)
+  float paramsSedang[] = { 25.0f, 50.0f };  // Monotonic Increasing (normal)
+  float paramsCepat[] = { 50.0f, 100.0f };  // Monotonic Increasing (panas)
 
   fuzzyTsukamoto.addFuzzySet(0, false, "Lambat", Fuzzy::MONOTONIC_DECREASING, paramsLambat);
   fuzzyTsukamoto.addFuzzySet(0, false, "Sedang", Fuzzy::MONOTONIC_INCREASING, paramsSedang);
