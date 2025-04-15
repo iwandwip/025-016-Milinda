@@ -1,0 +1,60 @@
+# Tabel Perbandingan Output Metode Fuzzy Logic (Diperbarui)
+
+| Input (Suhu °C) | Output Mamdani (%) | Output Sugeno (%) | Output Tsukamoto (%) Expected |
+|-----------------|-------------------|------------------|---------------------|
+| 0               | 16.33             | 20.00            | 0.00                |
+| 5               | 16.93             | 20.00            | 10.00               |
+| 10              | 18.31             | 20.00            | 20.00               |
+| 15              | 20.16             | 20.00            | 30.00               |
+| 20              | 41.61             | 41.43            | 38.21               |
+| 25              | 50.00             | 50.00            | 50.00               |
+| 30              | 58.39             | 58.57            | 63.93               |
+| 35              | 79.84             | 80.00            | 70.00               |
+| 40              | 81.69             | 80.00            | 80.00               |
+| 45              | 83.07             | 80.00            | 90.00               |
+| 50              | 83.67             | 80.00            | 100.00              |
+
+## Analisis Perbaikan untuk Tsukamoto
+
+Dengan perubahan yang telah diterapkan pada `findInverseMembershipValue` dan parameter monotonic function, Anda seharusnya akan mendapatkan hasil yang lebih sesuai dengan ekspektasi, terutama untuk titik-titik kritis:
+
+1. **Input 0°C**: Seharusnya menghasilkan output 0% (Lambat pada nilai maksimum)
+2. **Input 25°C**: Seharusnya menghasilkan output 50% (Sedang pada nilai maksimum)
+3. **Input 50°C**: Seharusnya menghasilkan output 100% (Cepat pada nilai maksimum)
+
+Hasil untuk setiap titik:
+
+### Suhu 0°C
+- Keanggotaan: Dingin = 1.0
+- Rule yang aktif: Rule 1 (Lambat) dengan firing strength = 1.0
+- Output yang diharapkan: 0% (nilai bawah dari interval Lambat [50,0])
+
+### Suhu 25°C
+- Keanggotaan: Normal = 1.0
+- Rule yang aktif: Rule 2 (Sedang) dengan firing strength = 1.0
+- Output yang diharapkan: 50% (nilai atas dari interval Sedang [0,50])
+
+### Suhu 50°C
+- Keanggotaan: Panas = 1.0
+- Rule yang aktif: Rule 3 (Cepat) dengan firing strength = 1.0
+- Output yang diharapkan: 100% (nilai atas dari interval Cepat [50,100])
+
+## Kemungkinan Penyebab Masalah yang Tersisa
+
+Jika masih ada perbedaan antara nilai yang diharapkan dan hasil aktual:
+
+1. **Masalah Floating Point**: Ketika mengevaluasi nilai tepat di batas (0, 25, 50), kemungkinan terjadi error perhitungan floating point yang menyebabkan sedikit ketidaktepatan.
+
+2. **Multiple Rule Firing**: Pada nilai di sekitar 25°C, baik rule "Normal" maupun rule "Dingin/Panas" bisa aktif bersamaan, menyebabkan hasil yang berbeda dari yang diharapkan.
+
+3. **Konflik Parameter**: Pastikan parameter untuk fungsi monotonic sudah benar dan konsisten, terutama untuk titik 25°C yang menjadi titik pertemuan ketiga fungsi.
+
+## Tips Pengujian
+
+Untuk memastikan implementasi sudah benar:
+
+1. Gunakan nilai yang sedikit dibawah titik kritis, misalnya 24.9°C daripada tepat 25.0°C untuk menghindari masalah floating point.
+
+2. Tambahkan logging untuk menunjukkan firing strength dari setiap rule pada saat evaluasi.
+
+3. Periksa implementasi weighted average pada fungsi evaluasi untuk memastikan perhitungan sudah benar.
