@@ -14,6 +14,6 @@ void setup() {
 
 void loop() {
   sensor.update([]() {
-    sensor.debug();
+    sensor.debug(500, false);
   });
 }

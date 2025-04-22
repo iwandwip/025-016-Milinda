@@ -8,12 +8,12 @@ SensorModule sensor;
 
 void setup() {
   Serial.begin(115200);
-  sensor.addModule("soil", new AnalogSens(35, 3.3, 4096.0));
+  sensor.addModule("soil", new AnalogSens(36, 3.3, 4096.0));
   sensor.init();
 }
 
 void loop() {
   sensor.update([]() {
-    sensor.debug();
+    sensor.debug(500, false);
   });
 }
