@@ -90,20 +90,40 @@ void printMenu() {
   Serial.println("================");
 }
 
-// Read and display sensor values
+// Read and display sensor values continuously until user presses any key
 void readSensor() {
-  float raw = sensor.readRaw();
-  float voltage = sensor.readVoltage();
-  float value = sensor.readValue();
+  Serial.println("\n===== CONTINUOUS SENSOR READINGS =====");
+  Serial.println("Press any key to stop...");
+  delay(1000);  // Give user time to read the message
 
-  Serial.println("\n===== SENSOR READINGS =====");
-  Serial.print("Raw ADC: ");
-  Serial.println(raw);
-  Serial.print("Voltage: ");
-  Serial.print(voltage, 3);
-  Serial.println(" V");
-  Serial.print("Calibrated value: ");
-  Serial.println(value, 3);
+  while (!Serial.available()) {
+    float raw = sensor.readRaw();
+    float voltage = sensor.readVoltage();
+    float value = sensor.readValue();
+
+    // Clear previous line to make the display cleaner
+    Serial.print("\r");
+
+    // Display values on a single line for continuous monitoring
+    Serial.print("Raw ADC: ");
+    Serial.print(raw);
+    Serial.print(" | Voltage: ");
+    Serial.print(voltage, 3);
+    Serial.print("V | Calibrated: ");
+    Serial.print(value, 3);
+
+    // Add some spaces to ensure old text gets overwritten
+    Serial.print("                    ");
+
+    delay(200);  // Update 5 times per second
+  }
+
+  // Clear the input buffer
+  while (Serial.available()) {
+    Serial.read();
+  }
+
+  Serial.println("\n\nSensor reading stopped");
 }
 
 // Clear calibration data
