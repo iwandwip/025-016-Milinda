@@ -3,7 +3,8 @@
 #define ENABLE_MODULE_TASK_HANDLER
 #define ENABLE_MODULE_TIMER_DURATION
 #define ENABLE_MODULE_TIMER_TASK
-#define ENABLE_MODULE_SERIAL_HARD
+#define ENABLE_MODULE_SERIAL_ENHANCED
+#define ENABLE_MODULE_SERIAL_DEBUGGER_V2
 #define ENABLE_MODULE_DATETIME_NTP_V2
 
 #define ENABLE_MODULE_FIREBASE_APPLICATION_V3
@@ -21,7 +22,7 @@
 #include "WiFiClientSecure.h"
 
 ////////// Utility //////////
-const char *ntpServer = "pool.ntp.org";
+const char* ntpServer = "pool.ntp.org";
 const long gmtOffset_sec = 7 * 3600;  // Offset for WIB (UTC+7)
 const int daylightOffset_sec = 0;
 
@@ -37,14 +38,18 @@ WiFiClientSecure client;
 SensorModule sensor;
 
 ////////// Communication //////////
-HardSerial usbSerial;
+CustomLogLevel LOG_INFO;
+CustomLogLevel LOG_SENSOR;
+CustomLogLevel LOG_COMS;
+SerialDebuggerV2 debug(115200);
+EnhancedSerial usbSerial;
 
 ////////// Input Module //////////
 DigitalIn buttonDown(-1);
 DigitalIn buttonOk(-1);
 
 ////////// Output Module //////////
-DigitalOut buzzer(LED_BUILTIN);
+DigitalOut buzzer(LED_BUILTIN); // LED_BUILTIN
 
 ////////// Global Variable //////////
 bool firebaseEnable = false;
@@ -75,3 +80,6 @@ enum FirebaseMessagingState {
 FirebaseRTDBState firebaseRTDBState = RTDB_IDLE;
 FirebaseFirestoreState firebaseFirestoreState = FIRESTORE_IDE;
 FirebaseMessagingState firebaseMessagingState = MESSAGING_IDLE;
+
+float value1;
+float value2;
