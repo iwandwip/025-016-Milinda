@@ -2,17 +2,17 @@
 #include "AnalogSensorCalibrator.h"
 
 // Define the analog pin for the sensor
-#define SENSOR_PIN A0
+#define SENSOR_PIN 34
 
 // Create the sensor calibrator instance
-AnalogSensorCalibrator sensor(SENSOR_PIN);
+AnalogSensorCalibrator sensor(SENSOR_PIN, 3.3);
 
 // Global variables
 unsigned long lastReadTime = 0;
 const unsigned long READ_INTERVAL = 1000;  // Read every second
 
 void setup() {
-  Serial.begin(9600);
+  Serial.begin(115200);
   while (!Serial && millis() < 3000)
     ;  // Wait for serial connection
 
