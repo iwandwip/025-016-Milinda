@@ -2,7 +2,7 @@
 #include "AnalogSensorCalibrator.h"
 
 // Define the analog pin for the sensor
-#define SENSOR_PIN 32
+#define SENSOR_PIN A0
 
 // Create the sensor calibrator instance
 AnalogSensorCalibrator sensor(SENSOR_PIN);
@@ -12,7 +12,7 @@ unsigned long lastReadTime = 0;
 const unsigned long READ_INTERVAL = 1000;  // Read every second
 
 void setup() {
-  Serial.begin(115200);
+  Serial.begin(9600);
   while (!Serial && millis() < 3000)
     ;  // Wait for serial connection
 
@@ -34,9 +34,10 @@ void setup() {
 }
 
 void loop() {
-  // Periodically read and display sensor values
+  // Periodically read and display sensor values if enabled
   if (millis() - lastReadTime > READ_INTERVAL) {
-    readSensor();
+    // Uncomment the next line if you want automatic readings
+    // readSensor();
     lastReadTime = millis();
   }
 
@@ -46,22 +47,26 @@ void loop() {
 
     switch (cmd) {
       case '1':
-        onePointCalibration();
+        readSensor();
         printMenu();
         break;
       case '2':
-        twoPointCalibration();
+        onePointCalibration();
         printMenu();
         break;
       case '3':
-        multiPointCalibration();
+        twoPointCalibration();
         printMenu();
         break;
       case '4':
-        sensor.printCalibrationDetails();
+        multiPointCalibration();
         printMenu();
         break;
       case '5':
+        sensor.printCalibrationDetails();
+        printMenu();
+        break;
+      case '6':
         clearCalibration();
         printMenu();
         break;
@@ -75,11 +80,12 @@ void loop() {
 // Display menu options
 void printMenu() {
   Serial.println("\n===== MENU =====");
-  Serial.println("1: One-Point Calibration");
-  Serial.println("2: Two-Point Calibration");
-  Serial.println("3: Multi-Point Calibration");
-  Serial.println("4: Show Calibration Details");
-  Serial.println("5: Clear Calibration");
+  Serial.println("1: Read Sensor Value");
+  Serial.println("2: One-Point Calibration");
+  Serial.println("3: Two-Point Calibration");
+  Serial.println("4: Multi-Point Calibration");
+  Serial.println("5: Show Calibration Details");
+  Serial.println("6: Clear Calibration");
   Serial.println("?: Show This Menu");
   Serial.println("================");
 }
@@ -90,11 +96,13 @@ void readSensor() {
   float voltage = sensor.readVoltage();
   float value = sensor.readValue();
 
+  Serial.println("\n===== SENSOR READINGS =====");
   Serial.print("Raw ADC: ");
-  Serial.print(raw);
-  Serial.print(" | Voltage: ");
+  Serial.println(raw);
+  Serial.print("Voltage: ");
   Serial.print(voltage, 3);
-  Serial.print("V | Calibrated: ");
+  Serial.println(" V");
+  Serial.print("Calibrated value: ");
   Serial.println(value, 3);
 }
 
