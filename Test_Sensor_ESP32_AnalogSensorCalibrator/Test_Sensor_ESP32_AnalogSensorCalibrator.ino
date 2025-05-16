@@ -5,7 +5,7 @@
 #define SENSOR_PIN 32
 
 // Create the sensor calibrator instance
-AnalogSensorCalibrator sensor(SENSOR_PIN, 3.3);
+AnalogSensorCalibrator sensor(SENSOR_PIN, 3.3, 4095.0);
 
 // Global variables
 unsigned long lastReadTime = 0;

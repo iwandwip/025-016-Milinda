@@ -11,7 +11,7 @@
 
 class AnalogSensorCalibrator {
 public:
-  AnalogSensorCalibrator(int pin, float referenceVoltage = 5.0);
+  AnalogSensorCalibrator(int pin, float referenceVoltage = 5.0, float adcRange = 0);
   ~AnalogSensorCalibrator();
 
   float readRaw();
@@ -55,6 +55,7 @@ private:
 
   int _pin;
   float _refVoltage;
+  float _adcRange;
   uint8_t _calibrationType;
   bool _isCalibrated;
   bool _inCalibrationMode;

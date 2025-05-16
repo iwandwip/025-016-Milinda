@@ -1,8 +1,21 @@
 #include "AnalogSensorCalibrator.h"
 
-AnalogSensorCalibrator::AnalogSensorCalibrator(int pin, float referenceVoltage) {
+AnalogSensorCalibrator::AnalogSensorCalibrator(int pin, float referenceVoltage, float adcRange) {
   _pin = pin;
   _refVoltage = referenceVoltage;
+
+  if (adcRange <= 0) {
+#if defined(ARDUINO_ARCH_ESP32)
+    _adcRange = 4095.0;
+#elif defined(ARDUINO_ARCH_ESP8266)
+    _adcRange = 1023.0;
+#else
+    _adcRange = 1023.0;
+#endif
+  } else {
+    _adcRange = adcRange;
+  }
+
   _calibrationType = CALIBRATION_NONE;
   _isCalibrated = false;
   _inCalibrationMode = false;
@@ -59,14 +72,7 @@ float AnalogSensorCalibrator::readAverage() {
 
 float AnalogSensorCalibrator::readVoltage() {
   float avgADC = readAverage();
-
-#if defined(ARDUINO_ARCH_ESP32)
-  return (avgADC / 4095.0) * _refVoltage;
-#elif defined(ARDUINO_ARCH_ESP8266)
-  return (avgADC / 1023.0) * _refVoltage;
-#else
-  return (avgADC / 1023.0) * _refVoltage;
-#endif
+  return (avgADC / _adcRange) * _refVoltage;
 }
 
 float AnalogSensorCalibrator::readValue() {
