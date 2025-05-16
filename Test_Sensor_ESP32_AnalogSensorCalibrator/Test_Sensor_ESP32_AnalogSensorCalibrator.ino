@@ -153,6 +153,12 @@ void onePointCalibration() {
 
   // Get known value from user
   Serial.print("Enter the known value for this voltage: ");
+
+  // Clear any existing input in the buffer
+  while (Serial.available()) {
+    Serial.read();
+  }
+
   while (!Serial.available()) {
     delay(10);
   }
@@ -179,6 +185,12 @@ void twoPointCalibration() {
   // First point
   Serial.println("\nSTEP 1: Set up your first reference point");
   Serial.println("Press Enter when ready...");
+
+  // Clear any existing input in the buffer
+  while (Serial.available()) {
+    Serial.read();
+  }
+
   while (!Serial.available()) {
     delay(10);
   }
@@ -196,6 +208,12 @@ void twoPointCalibration() {
   Serial.println("V");
 
   Serial.print("Enter the known value for this point: ");
+
+  // Clear any existing input in the buffer
+  while (Serial.available()) {
+    Serial.read();
+  }
+
   while (!Serial.available()) {
     delay(10);
   }
@@ -206,6 +224,12 @@ void twoPointCalibration() {
   // Second point
   Serial.println("\nSTEP 2: Set up your second reference point");
   Serial.println("Press Enter when ready...");
+
+  // Clear any existing input in the buffer
+  while (Serial.available()) {
+    Serial.read();
+  }
+
   while (!Serial.available()) {
     delay(10);
   }
@@ -223,6 +247,12 @@ void twoPointCalibration() {
   Serial.println("V");
 
   Serial.print("Enter the known value for this point: ");
+
+  // Clear any existing input in the buffer
+  while (Serial.available()) {
+    Serial.read();
+  }
+
   while (!Serial.available()) {
     delay(10);
   }
@@ -244,6 +274,11 @@ void twoPointCalibration() {
 void multiPointCalibration() {
   Serial.println("\n===== MULTI-POINT CALIBRATION =====");
   Serial.print("How many calibration points (2-10)? ");
+
+  // Clear any existing input in the buffer
+  while (Serial.available()) {
+    Serial.read();
+  }
 
   while (!Serial.available()) {
     delay(10);
@@ -271,6 +306,12 @@ void multiPointCalibration() {
 
     Serial.println("Set up your reference point");
     Serial.println("Press Enter when ready...");
+
+    // Clear any existing input in the buffer
+    while (Serial.available()) {
+      Serial.read();
+    }
+
     while (!Serial.available()) {
       delay(10);
     }
@@ -288,6 +329,12 @@ void multiPointCalibration() {
     Serial.println("V");
 
     Serial.print("Enter the known value for this point: ");
+
+    // Clear any existing input in the buffer
+    while (Serial.available()) {
+      Serial.read();
+    }
+
     while (!Serial.available()) {
       delay(10);
     }
@@ -303,6 +350,11 @@ void multiPointCalibration() {
   Serial.println("1: Linear interpolation between points");
   Serial.println("2: Polynomial curve fitting");
 
+  // Clear any existing input in the buffer
+  while (Serial.available()) {
+    Serial.read();
+  }
+
   while (!Serial.available()) {
     delay(10);
   }
@@ -317,6 +369,11 @@ void multiPointCalibration() {
     Serial.print("Enter polynomial degree (1-");
     Serial.print(maxDegree);
     Serial.println("):");
+
+    // Clear any existing input in the buffer
+    while (Serial.available()) {
+      Serial.read();
+    }
 
     while (!Serial.available()) {
       delay(10);
