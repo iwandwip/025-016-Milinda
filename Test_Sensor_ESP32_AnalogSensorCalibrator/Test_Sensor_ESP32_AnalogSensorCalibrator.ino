@@ -2,7 +2,7 @@
 #include "AnalogSensorCalibrator.h"
 
 // Define the analog pin for the sensor
-#define SENSOR_PIN 34
+#define SENSOR_PIN 32
 
 // Create the sensor calibrator instance
 AnalogSensorCalibrator sensor(SENSOR_PIN, 3.3);
@@ -96,24 +96,23 @@ void readSensor() {
   Serial.println("Press any key to stop...");
   delay(1000);  // Give user time to read the message
 
+  // Clear any existing input in the buffer
+  while (Serial.available()) {
+    Serial.read();
+  }
+
   while (!Serial.available()) {
     float raw = sensor.readRaw();
     float voltage = sensor.readVoltage();
     float value = sensor.readValue();
 
-    // Clear previous line to make the display cleaner
-    Serial.print("\r");
-
-    // Display values on a single line for continuous monitoring
+    // Display values on separate lines
     Serial.print("Raw ADC: ");
     Serial.print(raw);
     Serial.print(" | Voltage: ");
     Serial.print(voltage, 3);
     Serial.print("V | Calibrated: ");
-    Serial.print(value, 3);
-
-    // Add some spaces to ensure old text gets overwritten
-    Serial.print("                    ");
+    Serial.println(value, 3);
 
     delay(200);  // Update 5 times per second
   }
@@ -123,7 +122,7 @@ void readSensor() {
     Serial.read();
   }
 
-  Serial.println("\n\nSensor reading stopped");
+  Serial.println("\nSensor reading stopped");
 }
 
 // Clear calibration data
