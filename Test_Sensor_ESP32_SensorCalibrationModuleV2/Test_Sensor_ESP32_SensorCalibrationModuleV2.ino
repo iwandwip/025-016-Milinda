@@ -28,6 +28,7 @@ void setup() {
   EEPROM.begin(EEPROM_SIZE);
 #endif
 
+  sensorModule.setSerialOutput(&Serial);
   sensorModule.setEEPROMStartAddress(EEPROM_START_ADDRESS);
 
   sensorModule.addSensor("temperature", []() -> BaseSensV2* {
@@ -80,7 +81,7 @@ void loop() {
     switch (cmd) {
       case 'c':
       case 'C':
-        sensorModule.startCalibrationMode(&Serial, 300000);
+        sensorModule.startCalibrationMode(300000);
         break;
 
       case 'r':
@@ -100,12 +101,30 @@ void loop() {
 
       case 'l':
       case 'L':
-        if (sensorModule.loadAllCalibrations()) {
-          Serial.println("All calibrations loaded successfully");
-        } else {
-          Serial.println("Error loading calibrations");
+        {
+          CalibrationLoadResult result = sensorModule.loadAllCalibrationsWithStatus();
+          Serial.println("\n===== LOADING CALIBRATIONS =====");
+          Serial.print("Total sensors: ");
+          Serial.println(result.totalEntries);
+
+          if (result.successCount > 0) {
+            Serial.print("Successfully loaded: ");
+            Serial.println(result.successCount);
+          }
+
+          if (result.notCalibratedCount > 0) {
+            Serial.print("Not yet calibrated: ");
+            Serial.println(result.notCalibratedCount);
+          }
+
+          if (result.errorCount > 0) {
+            Serial.print("Error loading: ");
+            Serial.println(result.errorCount);
+          }
+
+          sensorModule.printCalibrationStatus();
+          break;
         }
-        break;
     }
   }
 
