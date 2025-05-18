@@ -64,6 +64,17 @@ void setup() {
   sensorModule.init();
   sensorModule.discoverSensorValues();
 
+  // CalibrationLoadResult result = sensorModule.loadAllCalibrationsWithStatus();
+  // Serial.println("\n===== CALIBRATION STATUS AT STARTUP =====");
+  // Serial.print("Total sensors: ");
+  // Serial.println(result.totalEntries);
+  // Serial.print("Successfully loaded: ");
+  // Serial.println(result.successCount);
+
+  // if (result.successCount > 0) {
+  //   sensorModule.printCalibrationStatus();
+  // }
+
   Serial.println("Sensors initialized. Available commands:");
   Serial.println("'c': Enter calibration mode");
   Serial.println("'r': Read all sensor values");
