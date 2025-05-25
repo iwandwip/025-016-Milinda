@@ -1,6 +1,9 @@
 #define ENABLE_SENSOR_MODULE_V2
 #define ENABLE_INTERACTIVE_SERIAL_GENERAL_SENSOR_CALIBRATOR_V2
 #define ENABLE_SENSOR_CALIBRATION_MODULE_V2
+#define ENABLE_SENSOR_FILTER_V2
+#define ENABLE_SENSOR_UTILITY_V2
+#define ENABLE_SENSOR_ALERT_SYSTEM_V2
 
 #define ENABLE_SENSOR_ANALOG_V2
 #include "Kinematrix.h"
@@ -29,5 +32,5 @@ void setup() {
 
 void loop() {
   sensor.update();
-  sensor.debugAll();
+  // sensor.debugAll();
 }
